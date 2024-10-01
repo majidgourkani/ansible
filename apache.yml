@@ -1,0 +1,21 @@
+---
+
+- hosts: all
+  become: yes 
+  vars:
+    proxy_var:
+      http_proxy: "http://172.16.43.4:3128"
+      https_proxy: "http://172.16.43.4:3128"
+      no_proxy: "192.168.48.0/24,localhost,127.0.0.1"
+
+  tasks:
+    - name: Update apt
+      apt:
+        update_cache: yes
+  
+    - name: install apache 2
+      environment: "{{proxy_var}}"
+      apt:
+        name: apache2
+        state: latest
+        dpkg_options: "--fix-missing" 
