@@ -12,10 +12,22 @@
     - name: Update apt
       apt:
         update_cache: yes
+        state: latest
+      when: ansible_distribution in ["Debian", "Ubuntu"]
+      # when: ansible_distribution == "Ubuntu" and "ansible_distribution_version" == "24.04"
+      # we can see other information with #ansible all -m gather_facts commands
   
     - name: install apache 2
       environment: "{{proxy_var}}"
       apt:
         name: apache2
         state: latest
-        dpkg_options: "--fix-missing" 
+        dpkg_options: "--fix-missing"
+      when: ansible_distribution == "Ubuntu"
+
+    - name: install apache 2
+      environment: "{{proxy_var}}"
+      dnf:
+        name: httpd
+        state: latest
+      when: ansible_distribution == "CentOS"
