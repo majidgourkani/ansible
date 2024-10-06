@@ -8,7 +8,7 @@
       https_proxy: "http://172.16.43.4:3128"
       no_proxy: "192.168.48.0/24,localhost,127.0.0.1"
 
-  tasks:
+  pre_tasks:
     #    - name: Update apt
     #  apt:
     #    update_cache: yes
@@ -16,11 +16,27 @@
     #  when: ansible_distribution in ["Debian", "Ubuntu"]
       # when: ansible_distribution == "Ubuntu" and "ansible_distribution_version" == "24.04"
       # we can see other information with #ansible all -m gather_facts commands
-  
+    - name: install update (CentOS)
+      tags: always
+      package:
+        update_only: yes
+        update_cache: yes
+      when: ansible_distribution == "CetnOS"
+
+    - name: install update (Ubuntu)
+      package:
+        upgrade: dist
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+- hosts: web_servers
+  become: yes
+  tasks:
     - name: install apache2 and php
+      tags: apache2,ubuntu
       environment: "{{proxy_var}}"
       apt:
-        name: 
+        name:
           - apache2
           - libapache2-mod-php
         state: latest
@@ -29,10 +45,12 @@
       when: ansible_distribution == "Ubuntu"
 
     - name: install apache 2
+      tags: centos,httpd
       environment: "{{proxy_var}}"
       dnf:
-        name: 
+        name:
           - httpd
           - php
-      update_cache: yes
+        update_cache: yes
       when: ansible_distribution == "CentOS"
+

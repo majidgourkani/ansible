@@ -20,19 +20,9 @@
     - name: install apache2 and php
       environment: "{{proxy_var}}"
       apt:
-        name: 
-          - apache2
-          - libapache2-mod-php
+        name:
+          - "{{ apache_package }}"
+          - "{{ php_package }}"
         state: latest
         update_cache: yes
         dpkg_options: "--fix-missing"
-      when: ansible_distribution == "Ubuntu"
-
-    - name: install apache 2
-      environment: "{{proxy_var}}"
-      dnf:
-        name: 
-          - httpd
-          - php
-      update_cache: yes
-      when: ansible_distribution == "CentOS"
